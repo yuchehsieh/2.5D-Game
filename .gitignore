@@ -1,0 +1,8 @@
+node_modules/
+dist/
+presentation/node_modules/
+presentation/dist/
+presentation/.export/
+*.log
+*.zip
+.DS_Store

@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="zh-Hant" class="booting">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>感染區：最後防線</title>
+    <style>
+      html, body { margin: 0; width: 100%; height: 100%; background: #080c0a; }
+      html.booting body > :not(#boot-screen) { visibility: hidden !important; }
+      #boot-screen {
+        position: fixed; inset: 0; z-index: 9999; display: grid; place-items: center;
+        color: #e8f2e8; background: #080c0a; font-family: Arial, "Microsoft JhengHei", sans-serif;
+      }
+      #boot-screen .boot-inner { width: min(360px, 78vw); text-align: center; }
+      #boot-screen strong { display: block; margin-bottom: 18px; color: #b9f53c; letter-spacing: .18em; }
+      #boot-screen .boot-track { height: 3px; overflow: hidden; background: #243024; }
+      #boot-progress { width: 4%; height: 100%; background: #b9f53c; transition: width .18s ease; }
+      #boot-status { margin-top: 12px; color: #78877c; font-size: 12px; }
+      html.ready #boot-screen { opacity: 0; visibility: hidden; transition: opacity .25s ease, visibility .25s; }
+    </style>
+  </head>
+  <body>
+    <div id="boot-screen" role="status" aria-live="polite">
+      <div class="boot-inner">
+        <strong>LOADING OPERATION</strong>
+        <div class="boot-track"><div id="boot-progress"></div></div>
+        <div id="boot-status">準備戰術資料...</div>
+      </div>
+    </div>
+    <div id="game">
+      <canvas id="game-canvas"></canvas>
+      <div id="hud" class="hidden">
+        <div class="hud-top">
+          <div class="objective-panel">
+            <span class="eyebrow">MISSION</span>
+            <strong id="objective">清除感染者</strong>
+            <div class="room-track">
+              <span class="room-dot active"></span><span class="room-line"></span>
+              <span class="room-dot"></span><span class="room-line"></span>
+              <span class="room-dot"></span>
+            </div>
+          </div>
+          <div class="threat-panel">
+            <span class="eyebrow">THREAT</span>
+            <strong id="enemy-count">0</strong><span>目標存活</span>
+          </div>
+        </div>
+        <div class="hud-bottom">
+          <div class="status-block">
+            <div class="status-label"><span>生命狀態</span><span id="health-text">100 / 100</span></div>
+            <div class="meter"><div id="health-fill" class="meter-fill"></div></div>
+          </div>
+          <div id="boss-health" class="boss-health hidden">
+            <div class="status-label"><span>巨型感染體</span><span id="boss-health-text">900 / 900</span></div>
+            <div class="meter boss-meter"><div id="boss-health-fill" class="meter-fill"></div></div>
+          </div>
+          <div class="ammo-block">
+            <span class="weapon-name">M4A1 / 5.56</span>
+            <div class="ammo-row"><strong id="ammo-current">30</strong><span>/ ∞</span></div>
+            <div id="reload-status" class="reload-status">READY</div>
+          </div>
+        </div>
+        <div id="crosshair"><span></span><span></span><span></span><span></span></div>
+        <div id="hit-marker"><span></span><span></span><span></span><span></span></div>
+      </div>
+
+      <section id="start-screen" class="screen">
+        <div class="scanlines"></div>
+        <div class="start-content">
+          <div class="classification">TACTICAL RESPONSE UNIT // OPERATION 07</div>
+          <h1>感染區<br /><span>最後防線</span></h1>
+          <p class="lead">突破三個封鎖區，阻止感染體擴散。</p>
+          <div class="mission-card">
+            <div><span class="eyebrow">任務地點</span><strong>隔離區 K-17</strong></div>
+            <div><span class="eyebrow">威脅等級</span><strong class="danger">嚴重</strong></div>
+            <div><span class="eyebrow">預估時間</span><strong>10 分鐘</strong></div>
+          </div>
+          <div class="visual-mode-control">
+            <span class="eyebrow">顯示模式</span>
+            <button id="visual-mode-button" class="mode-button" type="button">目前：3D 模型</button>
+            <span id="visual-mode-note">角色、怪物與場景使用 GLB 模型</span>
+          </div>
+          <div class="start-actions">
+            <button id="start-button" class="primary-button">進入感染區</button>
+            <a class="secondary-button" href="./presentation/infected-last-defense.html">查看製作實錄</a>
+          </div>
+          <p class="start-note">滑鼠自由瞄準 · 移動與射擊方向互相獨立</p>
+        </div>
+        <div class="controls-card">
+          <span class="eyebrow">戰術操作</span>
+          <div><kbd>WASD</kbd><span>移動</span></div>
+          <div><kbd>滑鼠</kbd><span>自由瞄準</span></div>
+          <div><kbd>左鍵</kbd><span>射擊</span></div>
+          <div><kbd>R</kbd><span>換彈</span></div>
+          <div><kbd>SPACE</kbd><span>翻滾</span></div>
+          <a class="license-link" href="./licenses.html">素材授權</a>
+        </div>
+      </section>
+
+      <section id="upgrade-screen" class="screen overlay hidden">
+        <div class="upgrade-wrap">
+          <span class="eyebrow">FIELD MODIFICATION</span>
+          <h2>選擇戰術配件</h2>
+          <p>配件將立即安裝，並維持至本次任務結束。</p>
+          <div id="upgrade-options" class="upgrade-grid"></div>
+        </div>
+      </section>
+
+      <section id="result-screen" class="screen overlay hidden">
+        <div class="result-card">
+          <span id="result-eyebrow" class="eyebrow">MISSION COMPLETE</span>
+          <h2 id="result-title">感染源已清除</h2>
+          <p id="result-copy">隔離區 K-17 暫時恢復控制。</p>
+          <div class="result-stats">
+            <div><span>擊殺</span><strong id="stat-kills">0</strong></div>
+            <div><span>射擊</span><strong id="stat-shots">0</strong></div>
+            <div><span>命中率</span><strong id="stat-accuracy">0%</strong></div>
+          </div>
+          <button id="restart-button" class="primary-button">再次部署</button>
+        </div>
+      </section>
+      <div id="damage-vignette"></div>
+      <div id="toast"></div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

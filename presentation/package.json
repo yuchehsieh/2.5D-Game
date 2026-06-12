@@ -1,0 +1,16 @@
+{
+  "name": "infected-last-defense-presentation",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "open-slide dev --host 127.0.0.1",
+    "build": "open-slide build",
+    "preview": "open-slide preview --host 127.0.0.1",
+    "export": "node scripts/export-presentation.mjs"
+  },
+  "dependencies": {
+    "@open-slide/core": "1.10.0",
+    "fflate": "^0.8.2",
+    "playwright": "^1.52.0"
+  }
+}
