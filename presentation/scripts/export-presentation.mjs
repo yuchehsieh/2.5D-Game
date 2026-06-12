@@ -77,8 +77,15 @@ function addPublicNavigation(html) {
   <span class="game-back-label">返回遊戲</span>
 </a>
 <style>
-.os-stage { align-items: flex-start; }
-.os-frame { transform-origin: top center; }
+.os-stage {
+  align-items: center;
+  background:
+    linear-gradient(rgba(185,245,60,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(185,245,60,.025) 1px, transparent 1px),
+    #0a100c;
+  background-size: 68px 68px;
+}
+.os-frame { transform-origin: center center; }
 .game-back-link {
   position: fixed; top: 12px; right: 12px; z-index: 50;
   display: inline-flex; align-items: center; gap: 7px;
@@ -100,10 +107,6 @@ function addPublicNavigation(html) {
 
   return html
     .replace('<html lang="en">', '<html lang="zh-Hant">')
-    .replace(
-      "var s = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);",
-      "var s = window.innerWidth / 1920;",
-    )
     .replace(
       /<title>.*?<\/title>/,
       "<title>感染者 最後防線：Web 2.5D 俯視射擊遊戲製作實錄</title>",
