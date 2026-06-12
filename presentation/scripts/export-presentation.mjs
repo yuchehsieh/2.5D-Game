@@ -72,23 +72,38 @@ async function waitForServer(url, attempts = 60) {
 
 function addPublicNavigation(html) {
   const backButton = `
-<a class="game-back-link" href="../" aria-label="返回遊戲首頁">← 返回遊戲</a>
+<a class="game-back-link" href="../" aria-label="返回遊戲首頁">
+  <span class="game-back-icon" aria-hidden="true">←</span>
+  <span class="game-back-label">返回遊戲</span>
+</a>
 <style>
+.os-stage { align-items: flex-start; }
+.os-frame { transform-origin: top center; }
 .game-back-link {
-  position: fixed; top: 18px; left: 18px; z-index: 50;
-  padding: 10px 15px; color: #b9f53c;
+  position: fixed; top: 12px; right: 12px; z-index: 50;
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 9px 13px; color: #b9f53c;
   border: 1px solid rgba(185,245,60,.58);
   background: rgba(5,8,6,.82); font: 700 14px/1.2 system-ui, sans-serif;
   letter-spacing: .08em; text-decoration: none; backdrop-filter: blur(8px);
+  box-shadow: 0 4px 18px rgba(0,0,0,.28);
 }
 .game-back-link:hover { color: #071006; background: #b9f53c; }
-@media (max-width: 700px) {
-  .game-back-link { top: 10px; left: 10px; padding: 8px 11px; font-size: 12px; }
+@media (max-width: 900px), (max-height: 850px) {
+  .game-back-link {
+    top: 8px; right: 8px; width: 34px; height: 34px; padding: 0;
+    justify-content: center; border-radius: 50%; font-size: 18px;
+  }
+  .game-back-label { display: none; }
 }
 </style>`;
 
   return html
     .replace('<html lang="en">', '<html lang="zh-Hant">')
+    .replace(
+      "var s = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);",
+      "var s = window.innerWidth / 1920;",
+    )
     .replace(
       /<title>.*?<\/title>/,
       "<title>感染者 最後防線：Web 2.5D 俯視射擊遊戲製作實錄</title>",
